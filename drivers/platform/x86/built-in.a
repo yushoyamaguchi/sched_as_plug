@@ -1,0 +1,18 @@
+!<thin>
+//                                              154       `
+touchscreen_dmi.o/
+intel-smartconnect.o/
+intel_turbo_max_3.o/
+intel_pmc_core.o/
+intel_pmc_core_pltdrv.o/
+intel_scu_ipc.o/
+intel_scu_pcidrv.o/
+pmc_atom.o/
+/0              0           0     0     644     252064    `
+/19             0           0     0     644     185992    `
+/41             0           0     0     644     118568    `
+/62             0           0     0     644     556664    `
+/80             0           0     0     644     179096    `
+/105           /0           0     0     644     267344    `
+/122            0           0     0     644     231560    `
+/142            0           0     0     644     297176    `

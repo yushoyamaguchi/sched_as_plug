@@ -1,0 +1,1 @@
+cmd_kernel/livepatch/built-in.a := rm -f kernel/livepatch/built-in.a; ar cDPrST kernel/livepatch/built-in.a kernel/livepatch/core.o kernel/livepatch/patch.o kernel/livepatch/shadow.o kernel/livepatch/state.o kernel/livepatch/transition.o

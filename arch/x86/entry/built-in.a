@@ -1,0 +1,26 @@
+!<thin>
+//                                              210       `
+entry_64.o/
+thunk_64.o/
+syscall_64.o/
+common.o/
+vdso/vma.o/
+vdso/vdso32-setup.o/
+vdso/vdso-image-64.o/
+vdso/vdso-image-32.o/
+vsyscall/vsyscall_64.o/
+vsyscall/vsyscall_emu_64.o/
+entry_64_compat.o/
+syscall_32.o/
+/0              0           0     0     644     78520     `
+/12             0           0     0     644     656       `
+/24             0           0     0     644     338000    `
+/38             0           0     0     644     443816    `
+/48             0           0     0     644     423176    `
+/60             0           0     0     644     62832     `
+/81            /0           0     0     644     65728     `
+/103           /0           0     0     644     65728     `
+/125            0           0     0     644     475856    `
+/149            0           0     0     644     10184     `
+/177            0           0     0     644     7104      `
+/196            0           0     0     644     342552    `

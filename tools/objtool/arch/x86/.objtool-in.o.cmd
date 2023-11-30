@@ -1,0 +1,1 @@
+cmd_/work5/scheduler/tools/objtool/arch/x86/objtool-in.o :=  ld -r -o /work5/scheduler/tools/objtool/arch/x86/objtool-in.o  /work5/scheduler/tools/objtool/arch/x86/special.o /work5/scheduler/tools/objtool/arch/x86/decode.o

@@ -1,0 +1,8 @@
+register_sched_domain_sysctl
+sched_debug_sops
+sched_feat_fops
+schedstat_sops
+set_rq_offline
+set_rq_online
+unregister_sched_domain_sysctl
+update_rq_clock

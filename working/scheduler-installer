@@ -1,0 +1,85 @@
+#!/bin/bash
+# Copyright 2019-2022 Alibaba Group Holding Limited.
+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+
+MAX_LOAD_ATTEMPTS=5
+RETRY_INTERVAL=2
+
+cursys=$(uname -r)
+modfile=/var/plugsched/$cursys/scheduler.ko
+hotfix_conflict_check=/var/plugsched/$cursys/hotfix_conflict_check
+tainted_functions=/var/plugsched/$cursys/tainted_functions
+enablefile=/sys/kernel/plugsched/plugsched/enable
+mod=$(modinfo $modfile | grep vermagic | awk '{print $2}')
+
+warn() {
+	echo "scheduler: $*" >&2
+}
+
+install_module() {
+	local i=0
+	while true; do
+		out="$(LC_ALL=C insmod "$1" 2>&1)"
+		[[ -z "$out" ]] && break
+		echo "$out" 1>&2
+
+		# Safety check or memory pool allocated failed! Retry in a few seconds.
+		i=$((i+1))
+		if [[ $i -eq $MAX_LOAD_ATTEMPTS ]]; then
+			warn "load module failed! $1"
+			exit 1
+		else
+			warn "retrying..."
+			sleep $RETRY_INTERVAL
+		fi
+	done
+}
+
+uninstall_module() {
+	local i=0
+	while true; do
+		out="$(export LC_ALL=C; sh -c "echo 0 > $enablefile" 2>&1)"
+		[[ -z "$out" ]] && break
+		echo "$out" 1>&2
+
+		# Safety check failed! Retry in a few seconds.
+		i=$((i+1))
+		if [[ $i -eq $MAX_LOAD_ATTEMPTS ]]; then
+			warn "disable module failed!"
+			exit 1
+		else
+			warn "retrying..."
+			sleep $RETRY_INTERVAL
+		fi
+	done
+	rmmod scheduler
+}
+
+if [ "$1" == "install" ]; then
+	if [ -f "$enablefile" ]; then
+		echo "scheduler: scheduler module has been installed! Skip..."
+		exit
+	fi
+
+	if [ "$cursys" == "$mod" ]; then
+		$hotfix_conflict_check $tainted_functions || exit 1
+		/usr/bin/mkdir -p /run/plugsched
+		/usr/bin/cp $modfile /run/plugsched/scheduler.ko
+		/var/plugsched/$(uname -r)/symbol_resolve /run/plugsched/scheduler.ko /proc/kallsyms
+		install_module /run/plugsched/scheduler.ko
+	else
+		warn "Error: kernel version is not same as plugsched version!"
+		exit 1
+	fi
+elif [ "$1" == "uninstall" ]; then
+	if [ -f "$enablefile" ]; then
+		uninstall_module
+	else
+		echo "scheduler: scheduler module has been removed! Skip ..."
+	fi
+
+	/usr/bin/rm -rf /run/plugsched
+else
+	warn "Error: Unknown operation"
+	exit 1
+fi

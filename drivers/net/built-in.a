@@ -1,0 +1,41 @@
+!<thin>
+//                                              340       `
+Space.o/
+loopback.o/
+phy/mdio-boardinfo.o/
+phy/mdio_devres.o/
+phy/phy.o/
+phy/phy-c45.o/
+phy/phy-core.o/
+phy/phy_device.o/
+phy/linkmode.o/
+phy/mdio_bus.o/
+phy/mdio_device.o/
+phy/swphy.o/
+phy/phy_led_triggers.o/
+phy/mii_timestamper.o/
+phy/sfp-bus.o/
+phy/fixed_phy.o/
+phy/realtek.o/
+dsa/dsa_loop_bdinfo.o/
+wireless/ti/wilink_platform_data.o/
+
+/0              0           0     0     644     395728    `
+/9              0           0     0     644     552752    `
+/21             0           0     0     644     257744    `
+/43             0           0     0     644     255336    `
+/62             0           0     0     644     795864    `
+/73             0           0     0     644     379616    `
+/88             0           0     0     644     390656    `
+/104            0           0     0     644     1150360   `
+/122            0           0     0     644     235528    `
+/138            0           0     0     644     687464    `
+/154            0           0     0     644     306056    `
+/173            0           0     0     644     250864    `
+/186            0           0     0     644     462136    `
+/210            0           0     0     644     255016    `
+/233            0           0     0     644     597968    `
+/248            0           0     0     644     515792    `
+/265            0           0     0     644     385704    `
+/280            0           0     0     644     539624    `
+/303            0           0     0     644     108888    `

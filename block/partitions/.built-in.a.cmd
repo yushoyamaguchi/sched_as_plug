@@ -1,0 +1,1 @@
+cmd_block/partitions/built-in.a := rm -f block/partitions/built-in.a; ar cDPrST block/partitions/built-in.a block/partitions/core.o block/partitions/amiga.o block/partitions/aix.o block/partitions/mac.o block/partitions/ldm.o block/partitions/msdos.o block/partitions/osf.o block/partitions/sgi.o block/partitions/sun.o block/partitions/efi.o block/partitions/karma.o

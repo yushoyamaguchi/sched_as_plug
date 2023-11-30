@@ -1,0 +1,20 @@
+# Copyright 2019-2022 Alibaba Group Holding Limited.
+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+
+[Unit]
+Description=The plugsched service
+ConditionKernelCommandLine=!plugsched.enable=0
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash -c "\
+	if [ -d /var/plugsched/$(uname -r) ]; then \
+		/var/plugsched/$(uname -r)/scheduler-installer install; \
+	else \
+		echo \"Scheduler for the current kernel version is not installed. Start service failed!\"; \
+		exit 1; \
+	fi"
+
+[Install]
+WantedBy=multi-user.target

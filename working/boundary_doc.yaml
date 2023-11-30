@@ -1,0 +1,196 @@
+cfs_bandwidth:
+  all_fields: [nr_throttled, lock, slack_timer, throttled_cfs_rq, period_timer, nr_periods,
+    period_active, period, hierarchical_quota, runtime, quota, idle, throttled_time,
+    slack_started]
+  public_fields: []
+  public_users: []
+cfs_rq:
+  all_fields: [exec_clock, tasks_timeline, curr, throttled_clock_task_time, prop_runnable_sum,
+    throttled_clock_task, rq, on_list, throttled, propagate, idle_h_nr_running, runtime_enabled,
+    next, h_load_next, throttle_count, throttled_clock, tg_load_avg_contrib, removed,
+    h_load, avg, leaf_cfs_rq_list, last, tg, load, last_h_load_update, nr_spread_over,
+    throttled_list, nr_running, skip, h_nr_running, min_vruntime, runtime_remaining]
+  public_fields: [tg, avg, rq]
+  public_users:
+  - !!python/tuple [sched_trace_cfs_rq_avg, kernel/sched/fair.c]
+  - !!python/tuple [set_task_rq_fair, kernel/sched/fair.c]
+  - !!python/tuple [cpu_util_cfs, kernel/sched/sched.h]
+  - !!python/tuple [rq_of, kernel/sched/sched.h]
+  - !!python/tuple [cfs_rq_tg_path, kernel/sched/fair.c]
+cpudl:
+  all_fields: [elements, lock, size, free_cpus]
+  public_fields: []
+  public_users: []
+cpudl_item:
+  all_fields: [dl, cpu, idx]
+  public_fields: []
+  public_users: []
+cpupri:
+  all_fields: [pri_to_cpu, cpu_to_pri]
+  public_fields: []
+  public_users: []
+cpupri_vec:
+  all_fields: [mask, count]
+  public_fields: []
+  public_users: []
+dl_bandwidth:
+  all_fields: [dl_period, dl_runtime, dl_runtime_lock]
+  public_fields: []
+  public_users: []
+dl_bw:
+  all_fields: [lock, total_bw, bw]
+  public_fields: [total_bw, lock]
+  public_users:
+  - !!python/tuple [dl_clear_root_domain, kernel/sched/deadline.c]
+  - !!python/tuple [dl_add_task_root_domain, kernel/sched/deadline.c]
+  - !!python/tuple [__dl_add, kernel/sched/sched.h]
+dl_rq:
+  all_fields: [dl_nr_migratory, root, this_bw, extra_bw, overloaded, pushable_dl_tasks_root,
+    running_bw, bw_ratio, earliest_dl, dl_nr_running]
+  public_fields: [extra_bw, running_bw]
+  public_users:
+  - !!python/tuple [cpu_bw_dl, kernel/sched/sched.h]
+  - !!python/tuple [__dl_update, kernel/sched/sched.h]
+irqtime:
+  all_fields: [sync, total, tick_delta, irq_start_time]
+  public_fields: [sync, irq_start_time, total, tick_delta]
+  public_users:
+  - !!python/tuple [irqtime_tick_accounted, kernel/sched/cputime.c]
+  - !!python/tuple [irqtime_account_irq, kernel/sched/cputime.c]
+  - !!python/tuple [irqtime_account_delta, kernel/sched/cputime.c]
+perf_domain:
+  all_fields: [em_pd, rcu, next]
+  public_fields: []
+  public_users: []
+root_domain:
+  all_fields: [pd, cpupri, max_cpu_capacity, dlo_count, rto_mask, rto_lock, dl_bw,
+    rto_loop_next, rto_loop, overload, dlo_mask, rto_count, refcount, cpudl, rto_push_work,
+    online, overutilized, rcu, rto_cpu, rto_loop_start, span]
+  public_fields: [span, dl_bw]
+  public_users:
+  - !!python/tuple [sched_trace_rd_span, kernel/sched/fair.c]
+  - !!python/tuple [dl_clear_root_domain, kernel/sched/deadline.c]
+  - !!python/tuple [dl_add_task_root_domain, kernel/sched/deadline.c]
+  - !!python/tuple [__dl_update, kernel/sched/sched.h]
+  - !!python/tuple [sched_setaffinity, kernel/sched/core.c]
+rq:
+  all_fields: [membarrier_state, nr_switches, rt, clock, sched_goidle, nr_preferred_running,
+    nr_iowait, push_cpu, avg_irq, clock_pelt, cfs, has_blocked_load, nohz_idle_balance,
+    avg_rt, calc_load_update, rd, prev_irq_time, tmp_alone_branch, misfit_task_load,
+    prev_mm, dl, ttwu_local, balance_callback, hrtick_timer, avg_idle, nr_uninterruptible,
+    cfs_tasks, next_balance, nr_running, cpu_capacity, cpu, rq_sched_info, numa_migrate_on,
+    ttwu_count, idle, avg_dl, online, last_blocked_load_update_tick, lost_idle_time,
+    curr, nohz_csd, nohz_flags, clock_update_flags, yld_count, idle_state, nohz_tick_stopped,
+    rq_cpu_time, sd, cpu_capacity_orig, active_balance_work, lock, calc_load_active,
+    hrtick_csd, hrtick_time, active_balance, leaf_cfs_rq_list, ttwu_pending, idle_balance,
+    stop, prev_steal_time, prev_steal_time_rq, max_idle_balance_cost, clock_task,
+    nr_numa_running, idle_stamp, sched_count]
+  public_fields: [membarrier_state, nr_switches, curr, nohz_csd, rt, nohz_flags, nr_iowait,
+    push_cpu, clock_update_flags, avg_irq, idle_state, cfs, calc_load_update, avg_rt,
+    rd, sd, tmp_alone_branch, cpu_capacity_orig, dl, lock, calc_load_active, active_balance,
+    balance_callback, leaf_cfs_rq_list, prev_steal_time, max_idle_balance_cost, avg_idle,
+    nr_uninterruptible, cfs_tasks, cpu_capacity, nr_running, next_balance, cpu, idle_stamp,
+    idle, avg_dl, online, last_blocked_load_update_tick]
+  public_users:
+  - !!python/tuple [membarrier_exec_mmap, kernel/sched/membarrier.c]
+  - !!python/tuple [nr_iowait_cpu, kernel/sched/core.c]
+  - !!python/tuple [sched_init, kernel/sched/core.c]
+  - !!python/tuple [rq_pin_lock, kernel/sched/sched.h]
+  - !!python/tuple [single_task_running, kernel/sched/core.c]
+  - !!python/tuple [sched_trace_rq_cpu_capacity, kernel/sched/fair.c]
+  - !!python/tuple [cpu_util_dl, kernel/sched/sched.h]
+  - !!python/tuple [cpu_util_cfs, kernel/sched/sched.h]
+  - !!python/tuple [kcpustat_field, kernel/sched/cputime.c]
+  - !!python/tuple [cpu_util_irq, kernel/sched/sched.h]
+  - !!python/tuple [steal_account_process_time, kernel/sched/cputime.c]
+  - !!python/tuple [cpu_of, kernel/sched/sched.h]
+  - !!python/tuple [rq_lock, kernel/sched/sched.h]
+  - !!python/tuple [ipi_sync_rq_state, kernel/sched/membarrier.c]
+  - !!python/tuple [sched_setaffinity, kernel/sched/core.c]
+  - !!python/tuple [task_curr, kernel/sched/core.c]
+  - !!python/tuple [sched_trace_rq_avg_irq, kernel/sched/fair.c]
+  - !!python/tuple [dl_add_task_root_domain, kernel/sched/deadline.c]
+  - !!python/tuple [dump_cpu_task, kernel/sched/core.c]
+  - !!python/tuple [schedutil_cpu_util, kernel/sched/cpufreq_schedutil.c]
+  - !!python/tuple [sched_trace_rq_avg_rt, kernel/sched/fair.c]
+  - !!python/tuple [account_process_tick, kernel/sched/cputime.c]
+  - !!python/tuple [__dl_update, kernel/sched/sched.h]
+  - !!python/tuple [idle_task_exit, kernel/sched/core.c]
+  - !!python/tuple [calc_load_fold_active, kernel/sched/loadavg.c]
+  - !!python/tuple [account_idle_time, kernel/sched/cputime.c]
+  - !!python/tuple [init_idle, kernel/sched/core.c]
+  - !!python/tuple [membarrier_private_expedited, kernel/sched/membarrier.c]
+  - !!python/tuple [cpu_bw_dl, kernel/sched/sched.h]
+  - !!python/tuple [irqtime_account_process_tick, kernel/sched/cputime.c]
+  - !!python/tuple [sched_trace_rq_nr_running, kernel/sched/fair.c]
+  - !!python/tuple [__task_rq_lock, kernel/sched/core.c]
+  - !!python/tuple [calc_global_load_tick, kernel/sched/loadavg.c]
+  - !!python/tuple [rq_unlock, kernel/sched/sched.h]
+  - !!python/tuple [cpu_util_rt, kernel/sched/sched.h]
+  - !!python/tuple [nr_running, kernel/sched/core.c]
+  - !!python/tuple [task_current, kernel/sched/sched.h]
+  - !!python/tuple [idle_set_state, kernel/sched/sched.h]
+  - !!python/tuple [rq_unlock_irq, kernel/sched/sched.h]
+  - !!python/tuple [task_rq_unlock, kernel/sched/sched.h]
+  - !!python/tuple [nr_context_switches, kernel/sched/core.c]
+  - !!python/tuple [kcpustat_cpu_fetch, kernel/sched/cputime.c]
+  - !!python/tuple [sched_trace_rq_avg_dl, kernel/sched/fair.c]
+  - !!python/tuple [rq_unpin_lock, kernel/sched/sched.h]
+  - !!python/tuple [calc_load_nohz_stop, kernel/sched/loadavg.c]
+  - !!python/tuple [idle_task, kernel/sched/core.c]
+  - !!python/tuple [sync_runqueues_membarrier_state, kernel/sched/membarrier.c]
+  - !!python/tuple [membarrier_global_expedited, kernel/sched/membarrier.c]
+rq_flags:
+  all_fields: [flags, cookie, clock_update_flags]
+  public_fields: [clock_update_flags, flags]
+  public_users:
+  - !!python/tuple [rq_unpin_lock, kernel/sched/sched.h]
+  - !!python/tuple [rq_pin_lock, kernel/sched/sched.h]
+  - !!python/tuple [task_rq_unlock, kernel/sched/sched.h]
+  - !!python/tuple [try_invoke_on_locked_down_task, kernel/sched/core.c]
+rt_bandwidth:
+  all_fields: [rt_period_timer, rt_runtime, rt_period_active, rt_runtime_lock, rt_period]
+  public_fields: [rt_runtime]
+  public_users:
+  - !!python/tuple [sched_init, kernel/sched/core.c]
+rt_prio_array:
+  all_fields: [queue, bitmap]
+  public_fields: []
+  public_users: []
+rt_rq:
+  all_fields: [rt_nr_migratory, rt_queued, rt_throttled, pushable_tasks, highest_prio,
+    rt_nr_total, active, rt_nr_running, rt_time, rt_runtime, overloaded, rr_nr_running,
+    rt_runtime_lock]
+  public_fields: [rt_runtime, rt_queued, rt_nr_running]
+  public_users:
+  - !!python/tuple [sched_init, kernel/sched/core.c]
+  - !!python/tuple [rt_rq_is_runnable, kernel/sched/sched.h]
+sched_class:
+  all_fields: [task_dead, select_task_rq, task_change_group, prio_changed, set_next_task,
+    check_preempt_curr, get_rr_interval, task_woken, rq_offline, switched_from, rq_online,
+    balance, yield_task, put_prev_task, set_cpus_allowed, migrate_task_rq, update_curr,
+    enqueue_task, task_fork, task_tick, pick_next_task, switched_to, dequeue_task,
+    yield_to_task]
+  public_fields: []
+  public_users: []
+sched_group:
+  all_fields: [next, asym_prefer_cpu, ref, group_weight, sgc, cpumask]
+  public_fields: []
+  public_users: []
+sched_group_capacity:
+  all_fields: [imbalance, id, min_capacity, cpumask, capacity, ref, next_update, max_capacity]
+  public_fields: []
+  public_users: []
+task_group:
+  all_fields: [cfs_rq, list, siblings, autogroup, load_avg, children, cfs_bandwidth,
+    shares, rcu, parent, se, css]
+  public_fields: [cfs_bandwidth, shares, cfs_rq, list, se, siblings, autogroup, css,
+    children]
+  public_users:
+  - !!python/tuple [task_group_is_autogroup, kernel/sched/autogroup.h]
+  - !!python/tuple [autogroup_path, kernel/sched/autogroup.c]
+  - !!python/tuple [autogroup_free, kernel/sched/autogroup.c]
+  - !!python/tuple [sched_init, kernel/sched/core.c]
+  - !!python/tuple [autogroup_create, kernel/sched/autogroup.c]
+  - !!python/tuple [set_task_rq, kernel/sched/sched.h]
+  - !!python/tuple [cfs_rq_tg_path, kernel/sched/fair.c]

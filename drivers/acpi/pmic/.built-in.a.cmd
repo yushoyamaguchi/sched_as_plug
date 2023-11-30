@@ -1,0 +1,1 @@
+cmd_drivers/acpi/pmic/built-in.a := rm -f drivers/acpi/pmic/built-in.a; ar cDPrST drivers/acpi/pmic/built-in.a drivers/acpi/pmic/intel_pmic.o drivers/acpi/pmic/intel_pmic_bytcrc.o drivers/acpi/pmic/intel_pmic_chtcrc.o drivers/acpi/pmic/intel_pmic_xpower.o drivers/acpi/pmic/intel_pmic_bxtwc.o drivers/acpi/pmic/intel_pmic_chtwc.o drivers/acpi/pmic/intel_pmic_chtdc_ti.o

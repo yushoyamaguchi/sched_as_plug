@@ -1,0 +1,1 @@
+cmd_drivers/gpio/built-in.a := rm -f drivers/gpio/built-in.a; ar cDPrST drivers/gpio/built-in.a drivers/gpio/gpiolib.o drivers/gpio/gpiolib-devres.o drivers/gpio/gpiolib-legacy.o drivers/gpio/gpiolib-cdev.o drivers/gpio/gpiolib-acpi.o drivers/gpio/gpio-crystalcove.o drivers/gpio/gpio-msic.o drivers/gpio/gpio-tps68470.o

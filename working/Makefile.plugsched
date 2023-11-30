@@ -1,0 +1,26 @@
+# Copyright 2019-2022 Alibaba Group Holding Limited.
+# SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+
+include Makefile
+
+GCC_PLUGIN_FLAGS := -fplugin=/usr/lib64/gcc-python-plugin/python.so \
+		    -fplugin-arg-python-script=$(plugsched_tmpdir)/collect.py \
+		    -fplugin-arg-python-tmpdir=$(plugsched_tmpdir)
+
+PHONY += plugsched collect extract
+
+plugsched: scripts prepare
+	$(MAKE) -C $(srctree) M=$(plugsched_modpath) modules
+
+collect: modules_prepare
+	$(MAKE) CFLAGS_KERNEL="$(GCC_PLUGIN_FLAGS)" \
+		CFLAGS_MODULE="$(GCC_PLUGIN_FLAGS)" $(vmlinux-dirs)
+analyze:
+	find $(srctree)/arch -name "compressed" -type d | xargs -I% find % -name "*.c.boundary" -exec rm -f {} \;
+	rm -f $(srctree)/drivers/firmware/efi/libstub/*.c.boundary
+	python3 $(plugsched_tmpdir)/analyze.py ./vmlinux $(plugsched_tmpdir) $(plugsched_modpath)
+
+extract: $(objs)
+
+%.extract: %
+	python3 $(plugsched_tmpdir)/extract.py $^ $(plugsched_tmpdir) $(plugsched_modpath)

@@ -1,0 +1,1 @@
+cmd_security/integrity/evm/built-in.a := rm -f security/integrity/evm/built-in.a; ar cDPrST security/integrity/evm/built-in.a security/integrity/evm/evm_main.o security/integrity/evm/evm_crypto.o security/integrity/evm/evm_secfs.o security/integrity/evm/evm_posix_acl.o

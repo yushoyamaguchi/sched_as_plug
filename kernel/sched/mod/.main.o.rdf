@@ -1,0 +1,5 @@
+__mod_sched_feat_fops sched_feat_fops
+__mod_sched_debug_sops sched_debug_sops
+__mod_schedstat_sops schedstat_sops
+__mod_register_sched_domain_sysctl register_sched_domain_sysctl
+__mod_unregister_sched_domain_sysctl unregister_sched_domain_sysctl
