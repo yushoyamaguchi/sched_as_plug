@@ -4,3 +4,4 @@ vmlinux
 *.o
 *.ko
 *.rpm
+*.a
