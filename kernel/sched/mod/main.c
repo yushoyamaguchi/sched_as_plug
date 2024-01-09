@@ -18,6 +18,8 @@
 #include "head_jump.h"
 #include "stack_check.h"
 
+#include "sched_mod.h"
+
 #define CHECK_STACK_LAYOUT() \
 	BUILD_BUG_ON_MSG(MODULE_FRAME_POINTER != VMLINUX_FRAME_POINTER, \
 		"stack layout of __schedule can not match to it in vmlinux")
@@ -625,6 +627,13 @@ static void __exit sched_mod_exit(void)
 
 	printk("Bye, scheduler mod has be removed!\n");
 }
+
+void test_print_sched(void)
+{
+	printk("scheduler: test print\n");
+}
+
+EXPORT_SYMBOL(test_print_sched);
 
 module_init(sched_mod_init);
 module_exit(sched_mod_exit);
