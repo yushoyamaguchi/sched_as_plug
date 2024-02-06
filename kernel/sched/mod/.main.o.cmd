@@ -1541,6 +1541,7 @@ deps_kernel/sched/mod/main.o := \
   kernel/sched/mod/head_jump.h \
   kernel/sched/mod/export_jump.h \
   kernel/sched/mod/stack_check.h \
+  kernel/sched/mod/sched_mod.h \
   kernel/sched/mod/tainted_functions.h \
 
 kernel/sched/mod/main.o: $(deps_kernel/sched/mod/main.o)
