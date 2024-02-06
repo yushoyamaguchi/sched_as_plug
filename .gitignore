@@ -1,3 +1,7 @@
 *.boundary
 *.export_jump
 vmlinux
+*.o
+*.ko
+*.rpm
+*.a
