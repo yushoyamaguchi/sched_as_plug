@@ -1462,7 +1462,6 @@ static void __enqueue_dl_entity(struct sched_dl_entity *dl_se)
 	int leftmost = 1;
 
 	BUG_ON(!RB_EMPTY_NODE(&dl_se->rb_node));
-	printk_once("yama_debug:enqueue_dl_entity \n" );
 
 	while (*link) {
 		parent = *link;
