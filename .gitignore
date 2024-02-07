@@ -5,3 +5,4 @@ vmlinux
 *.ko
 *.rpm
 *.a
+symbol_resolve
