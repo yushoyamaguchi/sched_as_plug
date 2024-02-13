@@ -6,3 +6,4 @@ vmlinux
 *.rpm
 *.a
 symbol_resolve
+*.o.d
