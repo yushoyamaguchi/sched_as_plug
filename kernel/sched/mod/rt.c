@@ -1602,7 +1602,7 @@ static inline void set_next_task_rt(struct rq *rq, struct task_struct *p, bool f
 	if (rq->curr->sched_class != &rt_sched_class)
 		update_rt_rq_load_avg(rq_clock_pelt(rq), rq, 0);
 
-	rt_queue_push_tasks(rq);
+	//rt_queue_push_tasks(rq); //yama: push disabled
 }
 
 static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
@@ -2290,7 +2290,7 @@ static void switched_from_rt(struct rq *rq, struct task_struct *p)
 	if (!task_on_rq_queued(p) || rq->rt.rt_nr_running)
 		return;
 
-	rt_queue_pull_task(rq);
+	//rt_queue_pull_task(rq); //yama: pull disabled
 }
 
 #endif /* CONFIG_SMP */
@@ -2311,8 +2311,8 @@ static void switched_to_rt(struct rq *rq, struct task_struct *p)
 	 */
 	if (task_on_rq_queued(p) && rq->curr != p) {
 #ifdef CONFIG_SMP
-		if (p->nr_cpus_allowed > 1 && rq->rt.overloaded)
-			rt_queue_push_tasks(rq);
+		/*if (p->nr_cpus_allowed > 1 && rq->rt.overloaded)
+			rt_queue_push_tasks(rq);*/ //yama: push disabled
 #endif /* CONFIG_SMP */
 		if (p->prio < rq->curr->prio && cpu_online(cpu_of(rq)))
 			resched_curr(rq);
@@ -2335,8 +2335,8 @@ prio_changed_rt(struct rq *rq, struct task_struct *p, int oldprio)
 		 * If our priority decreases while running, we
 		 * may need to pull tasks to this runqueue.
 		 */
-		if (oldprio < p->prio)
-			rt_queue_pull_task(rq);
+		/*if (oldprio < p->prio)
+			rt_queue_pull_task(rq);*/ //yama: pull disabled
 
 		/*
 		 * If there's a higher priority task waiting to run
