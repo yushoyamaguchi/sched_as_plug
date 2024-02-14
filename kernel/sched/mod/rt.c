@@ -7,6 +7,9 @@
 
 #include "pelt.h"
 
+// prepare array of rq as max cpu num
+struct list_head yama_rt_rq_list[NR_CPUS];
+
 extern int sched_rr_timeslice;
 extern int sysctl_sched_rr_timeslice;
 /* More than 4 hours if BW_SHIFT equals 20. */
@@ -1307,6 +1310,14 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	rt_se->on_rq = 1;
 
 	inc_rt_tasks(rt_se, rt_rq);
+
+	//yama
+	struct task_struct *p = rt_task_of(rt_se);
+	if (p->rt_priority == 45) {
+		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
+		int cpu_id = rq_entity->cpu;
+		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
+	}
 }
 
 static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
