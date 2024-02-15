@@ -1291,7 +1291,8 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
-		//return;
+		//inc_rt_tasks(rt_se, rt_rq); //required?
+		return;
 	}
 
 	/*
@@ -1326,12 +1327,20 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 {
 	struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
 	struct rt_prio_array *array = &rt_rq->active;
+	//yama
+	struct task_struct *p = rt_task_of(rt_se);
 
-	if (move_entity(flags)) {
+	if (move_entity(flags) && p->rt_priority != 55) {
 		WARN_ON_ONCE(!rt_se->on_list);
 		__delist_rt_entity(rt_se, array);
 	}
 	rt_se->on_rq = 0;
+
+	if (p->rt_priority == 55) {
+		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
+		int cpu_id = rq_entity->cpu;
+		list_del_init(&rt_se->run_list);
+	}
 
 	dec_rt_tasks(rt_se, rt_rq);
 }
@@ -1363,10 +1372,9 @@ static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 	//yama
 	struct task_struct *p = rt_task_of(rt_se);
 
-	if(p->rt_priority!=55) dequeue_rt_stack(rt_se, flags);
+	dequeue_rt_stack(rt_se, flags);
 	for_each_sched_rt_entity(rt_se)
 		__enqueue_rt_entity(rt_se, flags);
-	if(p->rt_priority==55) return;	
 	enqueue_top_rt_rq(&rq->rt);
 }
 
@@ -1401,7 +1409,6 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 
 	enqueue_rt_entity(rt_se, flags);
 	//yama
-	if (p->policy == SCHED_FIFO && p->rt_priority == 55) return;
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
 }
