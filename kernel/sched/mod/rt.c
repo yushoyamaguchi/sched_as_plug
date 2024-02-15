@@ -1285,6 +1285,15 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	struct rt_rq *group_rq = group_rt_rq(rt_se);
 	struct list_head *queue = array->queue + rt_se_prio(rt_se);
 
+	//yama
+	struct task_struct *p = rt_task_of(rt_se);
+	if (p->rt_priority == 55) {
+		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
+		int cpu_id = rq_entity->cpu;
+		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
+		//return;
+	}
+
 	/*
 	 * Don't enqueue the group if its throttled, or when empty.
 	 * The latter is a consequence of the former when a child group
@@ -1311,13 +1320,6 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 
 	inc_rt_tasks(rt_se, rt_rq);
 
-	//yama
-	struct task_struct *p = rt_task_of(rt_se);
-	if (p->rt_priority == 45) {
-		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
-		int cpu_id = rq_entity->cpu;
-		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
-	}
 }
 
 static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
@@ -1358,10 +1360,13 @@ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 {
 	struct rq *rq = rq_of_rt_se(rt_se);
+	//yama
+	struct task_struct *p = rt_task_of(rt_se);
 
-	dequeue_rt_stack(rt_se, flags);
+	if(p->rt_priority!=55) dequeue_rt_stack(rt_se, flags);
 	for_each_sched_rt_entity(rt_se)
 		__enqueue_rt_entity(rt_se, flags);
+	if(p->rt_priority==55) return;	
 	enqueue_top_rt_rq(&rq->rt);
 }
 
@@ -1386,7 +1391,7 @@ static void dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 static void
 enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
-	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
+	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
 		printk_once("yama_debug: enq\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
@@ -1395,14 +1400,15 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 		rt_se->timeout = 0;
 
 	enqueue_rt_entity(rt_se, flags);
-
+	//yama
+	if (p->policy == SCHED_FIFO && p->rt_priority == 55) return;
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
 }
 
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
-	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
+	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
 		printk_once("yama_debug: enq\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
