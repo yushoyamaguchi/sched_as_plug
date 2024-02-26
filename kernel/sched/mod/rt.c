@@ -1645,6 +1645,12 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
 	struct list_head *queue;
 	int idx;
 
+	//yama
+	if (!list_empty(&yama_rt_rq_list[rq->cpu])){
+		next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
+		return next;
+	}
+
 	idx = sched_find_first_bit(array->bitmap);
 	BUG_ON(idx >= MAX_RT_PRIO);
 
