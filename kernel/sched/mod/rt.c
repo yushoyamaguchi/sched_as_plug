@@ -1292,7 +1292,7 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 		inc_rt_tasks(rt_se, rt_rq); //required?
-		return;
+		//return;
 	}
 
 	/*
@@ -1369,8 +1369,6 @@ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 {
 	struct rq *rq = rq_of_rt_se(rt_se);
-	//yama
-	struct task_struct *p = rt_task_of(rt_se);
 
 	dequeue_rt_stack(rt_se, flags);
 	for_each_sched_rt_entity(rt_se)
@@ -1408,7 +1406,7 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 		rt_se->timeout = 0;
 
 	enqueue_rt_entity(rt_se, flags);
-	//yama
+
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
 }
@@ -1442,7 +1440,7 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 			int cpu_id = rq_entity->cpu;
 			list_move_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
-			return;
+			//return;
 		}
 
 		if (head)
