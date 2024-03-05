@@ -8,7 +8,7 @@
 #include "pelt.h"
 
 // prepare array of rq as max cpu num
-struct list_head yama_rt_rq_list[NR_CPUS];
+//struct list_head yama_rt_rq_list[NR_CPUS];
 
 extern int sched_rr_timeslice;
 extern int sysctl_sched_rr_timeslice;
@@ -1286,14 +1286,14 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	struct list_head *queue = array->queue + rt_se_prio(rt_se);
 
 	//yama
-	struct task_struct *p = rt_task_of(rt_se);
+	/*struct task_struct *p = rt_task_of(rt_se);
 	if (p->rt_priority == 55) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 		inc_rt_tasks(rt_se, rt_rq); //required?
 		//return;
-	}
+	}*/
 
 	/*
 	 * Don't enqueue the group if its throttled, or when empty.
@@ -1330,17 +1330,17 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	//yama
 	struct task_struct *p = rt_task_of(rt_se);
 
-	if (move_entity(flags) && p->rt_priority != 55) {
+	if (move_entity(flags) ) {
 		WARN_ON_ONCE(!rt_se->on_list);
 		__delist_rt_entity(rt_se, array);
 	}
 	rt_se->on_rq = 0;
 
-	if (p->rt_priority == 55) {
+	/*if (p->rt_priority == 55) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_del_init(&rt_se->run_list);
-	}
+	}*/
 
 	dec_rt_tasks(rt_se, rt_rq);
 }
@@ -1436,12 +1436,12 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 		struct list_head *queue = array->queue + rt_se_prio(rt_se);
 		//yama
 		struct task_struct *p = rt_task_of(rt_se);
-		if(p->rt_priority == 55) {
+		/*if(p->rt_priority == 55) {
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 			int cpu_id = rq_entity->cpu;
 			list_move_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 			//return;
-		}
+		}*/
 
 		if (head)
 			list_move(&rt_se->run_list, queue);
