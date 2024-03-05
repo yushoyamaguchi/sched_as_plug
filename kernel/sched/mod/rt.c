@@ -1286,22 +1286,14 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	struct list_head *queue = array->queue + rt_se_prio(rt_se);
 
 	//yama
-	int size = sizeof(yama_rt_rq_list);
-	if (&rt_se->run_list == NULL) {
-		printk_once("yama_debug: run_list is null\n");
-	}
-	struct rq *rq_entity = rq_of_rt_rq(rt_rq);
-	int cpu_id = rq_entity->cpu;
-	if (&yama_rt_rq_list[cpu_id] == NULL) {
-		printk_once("yama_debug: yama_rt_rq_list is null\n");
-	}
+	/*struct task_struct *p = rt_task_of(rt_se);
 	if (p->rt_priority == 55) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 		inc_rt_tasks(rt_se, rt_rq); //required?
 		//return;
-	}
+	}*/
 
 	/*
 	 * Don't enqueue the group if its throttled, or when empty.
