@@ -1306,9 +1306,8 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
-		list_del_init(&rt_se->run_list);
 		//inc_rt_tasks(rt_se, rt_rq); //required?
-		//return;
+		return;
 	}
 
 	/*
@@ -1352,11 +1351,12 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	}
 	rt_se->on_rq = 0;
 
-	/*if (p->rt_priority == 55) {
+	if (p->rt_priority == 55) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_del_init(&rt_se->run_list);
-	}*/
+		return;
+	}
 
 	dec_rt_tasks(rt_se, rt_rq);
 }
@@ -1385,10 +1385,15 @@ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 {
 	struct rq *rq = rq_of_rt_se(rt_se);
+	struct task_struct *p = rt_task_of(rt_se);
 
 	dequeue_rt_stack(rt_se, flags);
 	for_each_sched_rt_entity(rt_se)
 		__enqueue_rt_entity(rt_se, flags);
+
+	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
+		printk("yama_debug: end enq entity\n");
+	}	
 	enqueue_top_rt_rq(&rq->rt);
 }
 
@@ -1413,15 +1418,15 @@ static void dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 static void
 enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
-	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
-		printk_once("yama_debug: enq\n");
-	}
 	struct sched_rt_entity *rt_se = &p->rt;
 
 	if (flags & ENQUEUE_WAKEUP)
 		rt_se->timeout = 0;
 
 	enqueue_rt_entity(rt_se, flags);
+	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
+		printk("yama_debug: end enq task\n");
+	}
 
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
@@ -1451,14 +1456,15 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 		struct rt_prio_array *array = &rt_rq->active;
 		struct list_head *queue = array->queue + rt_se_prio(rt_se);
 		//yama
-		/*init_yama_rt_rq_list();
+		//yama_rt_rq_list[cpu_id] が空の時はこのコードはエラーを起こさなかった
+		init_yama_rt_rq_list();
 		struct task_struct *p = rt_task_of(rt_se);
 		if(p->rt_priority == 55) {
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 			int cpu_id = rq_entity->cpu;
 			list_move_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
-			//return;
-		}*/
+			return;
+		}
 
 		if (head)
 			list_move(&rt_se->run_list, queue);
@@ -1667,8 +1673,7 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
 	next = list_entry(queue->next, struct sched_rt_entity, run_list);
 
 	//yama
-	//if文の条件を見直す
-	//空を返さないようになってる仕組みを調査
+	//ここのコメントアウトを外さなくてもエラーは起こった(0311)
 	/*if (!list_empty(&yama_rt_rq_list[rq->cpu])){
 		next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
 		printk_once("yama_debug: picked from my global queue\n");
