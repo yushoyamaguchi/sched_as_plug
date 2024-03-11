@@ -21,7 +21,6 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 extern struct rt_bandwidth def_rt_bandwidth;
 
 //yama
-struct list_head test_list_componet;
 static void init_yama_rt_rq_list(void)
 {
 	int i;
@@ -1306,8 +1305,8 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	if (p->rt_priority == 55) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
-		list_add_tail(&test_list_componet, &yama_rt_rq_list[cpu_id]);
-		list_del_init(&test_list_componet);
+		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
+		list_del_init(&rt_se->run_list);
 		//inc_rt_tasks(rt_se, rt_rq); //required?
 		//return;
 	}
