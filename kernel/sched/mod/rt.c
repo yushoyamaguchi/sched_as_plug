@@ -1302,7 +1302,7 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	//yama
 	init_yama_rt_rq_list();
 	struct task_struct *p = rt_task_of(rt_se);
-	if (p->rt_priority == 55) {
+	if (p->rt_priority == 45) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
@@ -1350,7 +1350,7 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	}
 	rt_se->on_rq = 0;
 
-	if (p->rt_priority == 55) {
+	if (p->rt_priority == 45) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_del_init(&rt_se->run_list);
@@ -1390,9 +1390,6 @@ static void enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flags)
 	for_each_sched_rt_entity(rt_se)
 		__enqueue_rt_entity(rt_se, flags);
 
-	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
-		printk("yama_debug: end enq entity\n");
-	}	
 	enqueue_top_rt_rq(&rq->rt);
 }
 
@@ -1423,9 +1420,6 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 		rt_se->timeout = 0;
 
 	enqueue_rt_entity(rt_se, flags);
-	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
-		printk("yama_debug: end enq task\n");
-	}
 
 	if (!task_current(rq, p) && p->nr_cpus_allowed > 1)
 		enqueue_pushable_task(rq, p);
@@ -1433,7 +1427,7 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
-	if (p->policy == SCHED_FIFO && p->rt_priority == 55) {
+	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
 		printk_once("yama_debug: enq\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
@@ -1457,7 +1451,7 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 		//yama
 		init_yama_rt_rq_list();
 		struct task_struct *p = rt_task_of(rt_se);
-		if(p->rt_priority == 55) {
+		if(p->rt_priority == 45) {
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 			int cpu_id = rq_entity->cpu;
 			list_move_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
