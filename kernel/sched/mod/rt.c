@@ -1306,6 +1306,7 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
+		printk_once("yama_debug: enq 45\n");
 		return;
 	}
 
@@ -1428,7 +1429,7 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
 	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
-		printk_once("yama_debug: enq\n");
+		printk_once("yama_debug: deq\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
 
