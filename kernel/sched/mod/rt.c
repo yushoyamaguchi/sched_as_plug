@@ -1300,7 +1300,6 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	struct list_head *queue = array->queue + rt_se_prio(rt_se);
 
 	//yama
-	init_yama_rt_rq_list();
 	struct task_struct *p = rt_task_of(rt_se);
 	if (p->rt_priority == 45) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
@@ -1429,7 +1428,7 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
 	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
-		printk_once("yama_debug: deq\n");
+		printk_once("yama_debug: deq 45\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
 
@@ -1450,7 +1449,6 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 		struct rt_prio_array *array = &rt_rq->active;
 		struct list_head *queue = array->queue + rt_se_prio(rt_se);
 		//yama
-		init_yama_rt_rq_list();
 		struct task_struct *p = rt_task_of(rt_se);
 		if(p->rt_priority == 45) {
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
