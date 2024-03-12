@@ -69,6 +69,8 @@ extern void clear_sched_state(bool mod);
 extern void rebuild_sched_state(bool mod);
 extern void switch_sched_class(bool mod);
 
+extern void init_yama_rt_rq_list(void);
+
 static int scheduler_enable = 0;
 struct kobject *plugsched_dir, *plugsched_subdir, *vmlinux_moddir;
 
@@ -609,6 +611,8 @@ static int __init sched_mod_init(void)
 	ret = register_plugsched_sysfs();
 	if (ret)
 		return ret;
+
+	init_yama_rt_rq_list();
 
 	init_end = ktime_get();
 	printk("scheduler: total initialization time is %14lld ns\n",

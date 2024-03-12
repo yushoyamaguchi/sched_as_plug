@@ -21,7 +21,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 extern struct rt_bandwidth def_rt_bandwidth;
 
 //yama
-static void init_yama_rt_rq_list(void)
+void init_yama_rt_rq_list(void)
 {
 	int i;
 	if(is_yama_rt_rq_list_init == 0){
@@ -1713,7 +1713,8 @@ static struct task_struct *pick_next_task_rt(struct rq *rq)
 	if (!sched_rt_runnable(rq)){
 		if (list_empty(&yama_rt_rq_list[rq->cpu])) 
 			return NULL;
-		p = _yama_pick_next_task_rt(rq);
+		//p = _yama_pick_next_task_rt(rq);
+		return NULL;
 	} else {
 		p = _pick_next_task_rt(rq);
 	}
