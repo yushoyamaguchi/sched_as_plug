@@ -1670,16 +1670,10 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
 static struct sched_rt_entity *yama_pick_next_rt_entity(struct rq *rq,
 						   struct rt_rq *rt_rq)
 {
-	struct rt_prio_array *array = &rt_rq->active;
 	struct sched_rt_entity *next = NULL;
 
-
-	//yama
-	if (!list_empty(&yama_rt_rq_list[rq->cpu])){
-		next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
-		printk_once("yama_debug: picked from my global queue\n");
-		return next;
-	}
+	next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
+	printk_once("yama_debug: picked from my global queue\n");
 
 	return next;
 }
@@ -1717,12 +1711,13 @@ static struct task_struct *pick_next_task_rt(struct rq *rq)
 	struct task_struct *p;
 
 	if (!sched_rt_runnable(rq)){
-		_yama_pick_next_task_rt(rq);
-		set_next_task_rt(rq, p, true);
-		return NULL;
+		if (list_empty(&yama_rt_rq_list[rq->cpu])) 
+			return NULL;
+		p = _yama_pick_next_task_rt(rq);
+	} else {
+		p = _pick_next_task_rt(rq);
 	}
-
-	p = _pick_next_task_rt(rq);
+	
 	set_next_task_rt(rq, p, true);
 	return p;
 }
