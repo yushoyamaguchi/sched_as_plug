@@ -1304,6 +1304,15 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	if (p->rt_priority == 45) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
+		int is_already_added = 0;
+		struct list_head *pos;
+		list_for_each(pos, &yama_rt_rq_list[cpu_id]) {
+			if (pos == &rt_se->run_list) {
+				is_already_added = 1;
+				break;
+			}
+    	}
+		if (is_already_added) return;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 		printk_once("yama_debug: enq 45\n");
 		return;
