@@ -1681,7 +1681,7 @@ static struct sched_rt_entity *yama_pick_next_rt_entity(struct rq *rq,
 	struct sched_rt_entity *next = NULL;
 
 	next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
-	printk("yama_debug: picked from my global queue\n");
+	printk_once("yama_debug: picked from my global queue\n");
 
 	return next;
 }
