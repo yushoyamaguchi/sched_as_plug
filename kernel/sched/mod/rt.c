@@ -21,7 +21,7 @@ static int do_sched_rt_period_timer(struct rt_bandwidth *rt_b, int overrun);
 extern struct rt_bandwidth def_rt_bandwidth;
 
 //yama
-static void init_yama_rt_rq_list(void)
+void init_yama_rt_rq_list(void)
 {
 	int i;
 	if(is_yama_rt_rq_list_init == 0){
@@ -1300,12 +1300,22 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	struct list_head *queue = array->queue + rt_se_prio(rt_se);
 
 	//yama
-	init_yama_rt_rq_list();
 	struct task_struct *p = rt_task_of(rt_se);
 	if (p->rt_priority == 45) {
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
+		int is_already_added = 0;
+		struct list_head *pos;
+		list_for_each(pos, &yama_rt_rq_list[cpu_id]) {
+			if (pos == &rt_se->run_list) {
+				is_already_added = 1;
+				break;
+			}
+    	}
+		if (is_already_added) return;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
+		printk_once("yama_debug: enq 45\n");
+		rt_se->on_rq = 1;
 		return;
 	}
 
@@ -1344,13 +1354,14 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	//yama
 	struct task_struct *p = rt_task_of(rt_se);
 
-	if (move_entity(flags) ) {
+	if (move_entity(flags) && p->rt_priority != 45 ) {
 		WARN_ON_ONCE(!rt_se->on_list);
 		__delist_rt_entity(rt_se, array);
 	}
 	rt_se->on_rq = 0;
 
 	if (p->rt_priority == 45) {
+		printk_once("yama_debug: deq entity 45\n");
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_del_init(&rt_se->run_list);
@@ -1376,8 +1387,9 @@ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 	dequeue_top_rt_rq(rt_rq_of_se(back));
 
 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
-		if (on_rt_rq(rt_se))
+		if (on_rt_rq(rt_se)){
 			__dequeue_rt_entity(rt_se, flags);
+		}
 	}
 }
 
@@ -1428,7 +1440,7 @@ enqueue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 static void dequeue_task_rt(struct rq *rq, struct task_struct *p, int flags)
 {
 	if (p->policy == SCHED_FIFO && p->rt_priority == 45) {
-		printk_once("yama_debug: enq\n");
+		printk_once("yama_debug: deq 45\n");
 	}
 	struct sched_rt_entity *rt_se = &p->rt;
 
@@ -1449,9 +1461,9 @@ requeue_rt_entity(struct rt_rq *rt_rq, struct sched_rt_entity *rt_se, int head)
 		struct rt_prio_array *array = &rt_rq->active;
 		struct list_head *queue = array->queue + rt_se_prio(rt_se);
 		//yama
-		init_yama_rt_rq_list();
 		struct task_struct *p = rt_task_of(rt_se);
 		if(p->rt_priority == 45) {
+			printk_once("yama_debug: requeue 45\n");
 			struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 			int cpu_id = rq_entity->cpu;
 			list_move_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
@@ -1664,12 +1676,16 @@ static struct sched_rt_entity *pick_next_rt_entity(struct rq *rq,
 	queue = array->queue + idx;
 	next = list_entry(queue->next, struct sched_rt_entity, run_list);
 
-	//yama
-	/*if (!list_empty(&yama_rt_rq_list[rq->cpu])){
-		next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
-		printk_once("yama_debug: picked from my global queue\n");
-		return next;
-	}*/
+	return next;
+}
+
+static struct sched_rt_entity *yama_pick_next_rt_entity(struct rq *rq,
+						   struct rt_rq *rt_rq)
+{
+	struct sched_rt_entity *next = NULL;
+
+	next = list_entry(yama_rt_rq_list[rq->cpu].next, struct sched_rt_entity, run_list);
+	printk_once("yama_debug: picked from my global queue\n");
 
 	return next;
 }
@@ -1688,14 +1704,33 @@ static struct task_struct *_pick_next_task_rt(struct rq *rq)
 	return rt_task_of(rt_se);
 }
 
+static struct task_struct *_yama_pick_next_task_rt(struct rq *rq)
+{
+	struct sched_rt_entity *rt_se;
+	struct rt_rq *rt_rq  = &rq->rt;
+
+	do {
+		rt_se = yama_pick_next_rt_entity(rq, rt_rq);
+		BUG_ON(!rt_se);
+		rt_rq = group_rt_rq(rt_se);
+	} while (rt_rq);
+
+	return rt_task_of(rt_se);
+}
+
 static struct task_struct *pick_next_task_rt(struct rq *rq)
 {
 	struct task_struct *p;
 
-	if (!sched_rt_runnable(rq))
-		return NULL;
-
-	p = _pick_next_task_rt(rq);
+	if (!sched_rt_runnable(rq)){
+		if (list_empty(&yama_rt_rq_list[rq->cpu])) 
+			return NULL;
+		p = _yama_pick_next_task_rt(rq);
+		//return NULL;
+	} else {
+		p = _pick_next_task_rt(rq);
+	}
+	
 	set_next_task_rt(rq, p, true);
 	return p;
 }
