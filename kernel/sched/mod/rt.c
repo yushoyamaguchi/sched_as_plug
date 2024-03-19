@@ -1315,6 +1315,7 @@ static void __enqueue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 		if (is_already_added) return;
 		list_add_tail(&rt_se->run_list, &yama_rt_rq_list[cpu_id]);
 		printk_once("yama_debug: enq 45\n");
+		rt_se->on_rq = 1;
 		return;
 	}
 
@@ -1353,13 +1354,14 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 	//yama
 	struct task_struct *p = rt_task_of(rt_se);
 
-	if (move_entity(flags) ) {
+	if (move_entity(flags) && p->rt_priority != 45 ) {
 		WARN_ON_ONCE(!rt_se->on_list);
 		__delist_rt_entity(rt_se, array);
 	}
 	rt_se->on_rq = 0;
 
 	if (p->rt_priority == 45) {
+		printk_once("yama_debug: deq enti 45\n");
 		struct rq *rq_entity = rq_of_rt_rq(rt_rq);
 		int cpu_id = rq_entity->cpu;
 		list_del_init(&rt_se->run_list);
@@ -1376,6 +1378,10 @@ static void __dequeue_rt_entity(struct sched_rt_entity *rt_se, unsigned int flag
 static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 {
 	struct sched_rt_entity *back = NULL;
+	struct task_struct *p = rt_task_of(rt_se);
+	if (p->rt_priority == 45) {
+		printk_once("yama_debug: deq stack 45\n");
+	}
 
 	for_each_sched_rt_entity(rt_se) {
 		rt_se->back = back;
@@ -1385,8 +1391,17 @@ static void dequeue_rt_stack(struct sched_rt_entity *rt_se, unsigned int flags)
 	dequeue_top_rt_rq(rt_rq_of_se(back));
 
 	for (rt_se = back; rt_se; rt_se = rt_se->back) {
-		if (on_rt_rq(rt_se))
+			struct task_struct *p = rt_task_of(rt_se);
+			if(p->rt_priority == 45) {
+				printk_once("yama_debug: deq stack 45 a\n");
+			}
+		if (on_rt_rq(rt_se)){
+			struct task_struct *p = rt_task_of(rt_se);
+			if(p->rt_priority == 45) {
+				printk_once("yama_debug: deq stack 45 b\n");
+			}
 			__dequeue_rt_entity(rt_se, flags);
+		}
 	}
 }
 
